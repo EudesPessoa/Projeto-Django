@@ -1,3 +1,5 @@
+import os
+
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404, HttpResponse
@@ -8,8 +10,8 @@ from utils.recipes.factory import make_recipe
 
 from .models import Recipe
 
-# Create your views here.
-
+# Abaixo esta importando do .env 
+PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
 
 def home(request):
@@ -21,7 +23,7 @@ def home(request):
     #     )
     # return render(request, 'recipes/pages/home.html', context={'recipes':[make_recipe() for _ in range(11)],})
 
-    page_obj, pagination_range = make_pagination(request, recipes, 9)
+    page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
 
     return render(request,
                   'recipes/pages/home.html',
@@ -46,7 +48,7 @@ def category(request, category_id):
         ).order_by('-id')
     )
 
-    page_obj, pagination_range = make_pagination(request, recipes, 9)
+    page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
 
     return render(request, 'recipes/pages/category.html', context={
         'recipes' : page_obj,
@@ -91,7 +93,7 @@ def search(request):
         is_published=True
     ).order_by('-id')
 
-    page_obj, pagination_range = make_pagination(request, recipes, 9)
+    page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
 
     return render(request, 'recipes/pages/search.html',
                   {'page_title': f'Search for "{search_term}" | ',
